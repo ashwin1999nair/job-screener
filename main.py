@@ -1,11 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form
+from  parser import extract_text_from_pdf, clean_text
 from pydantic import BaseModel
 
 app = FastAPI()
-
-class ScoreRequest(BaseModel):
-    resume_text: str
-    jd_text: str
 
 class ScoreResponse(BaseModel):
     fit_score: float
@@ -15,7 +12,17 @@ class ScoreResponse(BaseModel):
 def health_check():
     return {"status": "running"}
 
-@app.post("/score", response_model=ScoreResponse)
-def score_application(request: ScoreRequest):
-    # Placeholder for now — real logic comes later
-    return ScoreResponse(fit_score=50, message="Placeholder score")
+@app.post("/score", response_model=ScoreResponse) 
+async def score_application( 
+    file: UploadFile = File(..., description="PDF file of the resume"), 
+    job_description: str = Form(..., description="Job description text")  
+):
+    if file.content_type != "application/pdf":  
+        raise HTTPException(status_code=415, detail="Uploaded file must be a PDF.") 
+    
+    file_bytes = await file.read() 
+    raw_text = extract_text_from_pdf(file_bytes) 
+    resume_text = clean_text(raw_text)
+
+    # Placeholder — Phase 3 replaces this with Gemini scoring
+    return ScoreResponse(fit_score=50, message=resume_text[:200])
