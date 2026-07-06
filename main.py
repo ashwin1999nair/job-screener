@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from  parser import extract_text_from_pdf, clean_text
 from pydantic import BaseModel
+from scorer import score_resume
 
 app = FastAPI()
 
@@ -23,6 +24,5 @@ async def score_application(
     file_bytes = await file.read() 
     raw_text = extract_text_from_pdf(file_bytes) 
     resume_text = clean_text(raw_text)
-
-    # Placeholder — Phase 3 replaces this with Gemini scoring
-    return ScoreResponse(fit_score=50, message=resume_text[:200])
+    result = score_resume(resume_text, job_description)
+    return ScoreResponse(fit_score=result["fit_score"], message=result["reason"])
