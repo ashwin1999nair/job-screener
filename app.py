@@ -1,6 +1,9 @@
 import streamlit as st
 import requests
 
+import os
+API_URL = os.getenv("API_URL", "http://localhost:8000")
+
 st.title("Job Application Scoring Tool")
 st.subheader("Upload your resume and paste the job description to get a fit score.")
 
@@ -15,7 +18,7 @@ if st.button("Score Resume"):
     else:
         with st.spinner("Scoring your resume..."):
             try:
-                response = requests.post("http://localhost:8000/score", files={"file": (uploaded_file.name, uploaded_file.getvalue(),
+                response = requests.post(f"{API_URL}/score", files={"file": (uploaded_file.name, uploaded_file.getvalue(),
                  "application/pdf")}, data={"job_description": job_description})
                 
                 if response.status_code == 200:
