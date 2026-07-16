@@ -2,6 +2,9 @@ fastapi
 uvicorn
 pdfplumber
 python-multipart
+python-dotenv
 langchain
 langchain-google-genai
-python-dotenv
+langchain-core
+streamlit
+requests
