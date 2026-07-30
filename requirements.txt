@@ -8,3 +8,4 @@ langchain-google-genai
 langchain-core
 streamlit
 requests
+pytest
